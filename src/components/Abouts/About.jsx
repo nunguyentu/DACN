@@ -53,7 +53,7 @@ export default function About() {
                       <td>
                         <Link
                           to={getPath(row[0])}
-                          style={{ textDecoration: "none", color: "blue" }}
+                          style={{ textDecoration: "none", color: "black" }}
                         >
                           {row[0]}
                         </Link>

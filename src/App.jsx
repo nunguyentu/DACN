@@ -1,4 +1,7 @@
 import { useState } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';// có sd bootrap
+import Example from './components/Payments/ExampleModal'; // Đường dẫn đến file ExampleModal.jsx
+
 
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
@@ -20,7 +23,8 @@ import Layout from "./components/Layout";
 import Users from "./components/Users";
 import Product from "./components/Products/Product";
 import PrivacyPolicy from "./components/PrivacyPolicys/PrivacyPolicy";
-import Payment from "./components/payments/payment";
+import Payment from "./components/Payments/payment";
+
 import About from "./components/Abouts/About";
 import Review from "./components/Reviews/Review";
 
@@ -29,7 +33,7 @@ import ProductSP from "./components/Products/ProductSP";
 import LichSuHinhThanh from "./components/Abouts/LichSuHinhThanh";
 import SuMenh from "./components/Abouts/SuMenh";
 import DoiNgu from "./components/Abouts/DoiNgu";
-import ThanhToan from "./components/payments/payment";
+import ThanhToan from "./components/Payments/payment";
 import CheckPayment from "./components/Payments/checkpayment";
 
 
@@ -125,7 +129,9 @@ function App() {
               <Route path="/about/doingu" element={<DoiNgu />}/>
               <Route path="/payments/thanhtoan" element={<ThanhToan />}/>
               <Route path="/check-payment" element={<CheckPayment />} />
+             
             </Route>
+            
           </Routes>
         </Router>
       </div>

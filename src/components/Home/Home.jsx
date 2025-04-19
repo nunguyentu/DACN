@@ -32,7 +32,7 @@ export default function Home({ products, addToCart }) {
                   className="btn btn-primary border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100"
                   style={{ top: "0", right: "25%" }}
                 >
-                  Submit Now
+                  Tìm kiếm
                 </button>
               </div>
             </div>
@@ -50,7 +50,7 @@ export default function Home({ products, addToCart }) {
                       alt="First slide"
                     />
                     <a href="#" className="btn px-4 py-2 text-white rounded">
-                      Fruites
+                      Hoa Tươi
                     </a>
                   </div>
                   <div className="carousel-item rounded">

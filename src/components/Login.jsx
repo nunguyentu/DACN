@@ -19,7 +19,6 @@ export default function Login() {
       alert("Sai tài khoản hoặc mật khẩu!");
       return;
     }
-
     localStorage.setItem("loggedInUser", JSON.stringify(user));
 
     alert("Đăng nhập thành công!");

@@ -608,7 +608,7 @@
 }
 
 .login-btn:hover {
-  background: #81c408;
+  background: #0984d0;
 }
 
 /* Đăng ký */
@@ -721,14 +721,14 @@ p {
 }
 
 .header-container svg {
-  color: #16a34a;
+  color: #0e5fd0;
   margin-right: 8px;
   font-size: 18px;
 }
 /* end header-container  */
 /* contact */
 body {
-  padding-top: 120px; /* Nếu có header cố định */
+  padding-top: 150px; /* Nếu có header cố định */
 }
 
 /* .contact-container {
@@ -788,13 +788,14 @@ body {
 }
 /*gioi thieu*/
 .gt {
-  color: rgba(56, 207, 0, 0.852);
+  color: rgba(10, 103, 179, 0.852);
   transition: color 0.5s ease-in-out, transform 0.5s ease-in-out;
+  margin-top: 0 auto;
 }
 .gt:hover {
-  color: #43c900; /* Màu xanh đậm hơn khi hover */
+  color: #1e9cdf; /* Màu xanh đậm hơn khi hover */
   transform: scale(1.1); /* Phóng to nhẹ chữ khi hover */
-  text-shadow: 2px 1px 5px rgba(152, 241, 120, 0.855); /* Hiệu ứng đổ bóng */
+  text-shadow: 2px 1px 5px #1e9cdf; /* Hiệu ứng đổ bóng */
 }
 
 .table-container {
@@ -825,7 +826,7 @@ table {
 
 /* Tiêu đề bảng */
 th {
-  background: rgb(138, 209, 6);
+  background: rgb(7, 132, 210);
   color: white;
   padding: 15px;
   text-align: center;
@@ -843,7 +844,7 @@ td {
 
 /* Hiệu ứng hover */
 tr:hover td {
-  background: rgb(208, 255, 122);
+  background: rgb(61, 170, 242);
   color: rgb(0, 0, 0);
 }
 
@@ -886,14 +887,14 @@ tbody tr:nth-child(odd) {
   }
 }
 /* CSS cho trang Lịch sử hình thành và phát triển */
-/* .history-container {
+.history-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background-color: #f4f4f4;
   padding: 50px;
-} */
+}
 
 .history-content {
   background: white;
@@ -956,6 +957,7 @@ tbody tr:nth-child(odd) {
   text-decoration: none;
   font-size: 16px;
   font-weight: bold;
+  margin-top: 20px;
   transition: background 0.3s ease-in-out;
 }
 
@@ -1233,6 +1235,68 @@ button:active {
   transform: scale(0.95);
 }
 
+
+/* Thông báo thành công */
+/* Thông báo thành công */
+.text-green-600 {
+  color: #16a34a; /* Màu xanh lá cây */
+}
+
+.bg-green-100 {
+  background-color: #d1fae5; /* Nền xanh nhạt */
+}
+
+.text-red-600 {
+  color: #dc2626; /* Màu đỏ */
+}
+
+.bg-red-100 {
+  background-color: #fee2e2; /* Nền đỏ nhạt */
+}
+
+.notification {
+
+  top: 100%; /* Đặt phần tử ở vị trí giữa theo trục dọc */
+  left: 100%; /* Đặt phần tử ở vị trí giữa theo trục ngang */
+  transform: translate(-50%, -50%); /* Dịch chuyển phần tử về giữa chính xác */
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  font-weight: 800;
+  max-width: 30%;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Hiệu ứng cho thông báo */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
 /* Thông báo khi chưa có đánh giá */
 .thongbaodanhgia {
   font-size: 18px;
@@ -1252,6 +1316,7 @@ button:active {
     transform: scale(1);
   }
 }
+
 
 .review-item {
   animation: fadeScale 0.4s ease-out;
@@ -1302,4 +1367,14 @@ header h1 {
 }
 .phuongthucthanhtoan1{
   margin-bottom: 20px;
+}
+.bank-option:hover {
+  background-color: #e6f7ff;
+}
+/* chinh khung */
+.table-responsive {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

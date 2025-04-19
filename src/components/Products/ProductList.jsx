@@ -40,7 +40,7 @@ export default function ProductList() {
                   src={product.image} 
                   alt={product.name} 
                   style={{ width: "100px", height: "100px", objectFit: "cover" }} 
-                  onError={(e) => e.target.src = "/images/default.jpg"} // Nếu lỗi, dùng ảnh mặc định
+                  onError={(e) => e.target.src = "/images/default.jpg"}
                 />
                 <p>{product.name} - {product.price} VND</p>
               </li>

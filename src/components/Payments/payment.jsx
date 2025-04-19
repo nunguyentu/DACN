@@ -1,21 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
-import { Link } from "react-router-dom";
+const popularBanks = [
+  { name: "Vietcombank", logo: "/images/vietcombank.png" },
+  { name: "BIDV", logo: "/images/bidv.png" },
+  { name: "Techcombank", logo: "/images/teachcombank.png" },
+  { name: "ACB", logo: "/images/acb.jpg" },
+  { name: "VietinBank", logo: "/images/vietinbank.png" },
+  { name: "MB Bank", logo: "/images/mb.png" },
+  { name: "TPBank", logo: "/images/tpbank.png" },
+  { name: "VPBank", logo: "/images/vpbank.png" },
+];
 
-export default function ThanhToan() {
+function PaymentFeature() {
   const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState(
-    "Thanh toán khi nhận hàng"
-  );
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [notificationModalContent, setNotificationModalContent] = useState({
+    title: "Thông Báo",
+    message: "Đặt hàng thành công!",
+  });
   const [shippingInfo, setShippingInfo] = useState({
     name: "",
     phone: "",
     address: "",
     note: "",
   });
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+
+  const [paymentMethod, setPaymentMethod] = useState("Thanh toán khi nhận hàng");
+  const [bankInfo, setBankInfo] = useState({
+    bankName: "",
+    bankLogo: "",
+  });
+
+  // Handle modal close
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseNotificationModal = () => setShowNotificationModal(false);
+
+  // Load cart from local storage
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
@@ -23,195 +48,263 @@ export default function ThanhToan() {
     }
   }, []);
 
-  const addToCart = (product, quantity) => {
-    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingProduct = cartData.find((item) => item.id === product.id);
+  // Calculate total amount of the order
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-    if (existingProduct) {
-      existingProduct.quantity += quantity;
-    } else {
-      cartData.push({ ...product, quantity });
-    }
+  // Format total as currency (VND) or set to 0 if the cart is empty
+  const formattedTotal = total > 0 
+    ? total.toLocaleString('vi-VN') 
+    : "0";
 
-    localStorage.setItem("cart", JSON.stringify(cartData));
-    setCart(cartData); // Cập nhật giỏ hàng để giao diện render lại
-  };
-
-  // Xử lý khi người dùng nhập thông tin nhận hàng
+  // Handle changes in shipping info
   const handleChange = (e) => {
-    setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setShippingInfo((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  // Xác nhận thanh toán
+  // Handle bank selection
+  const handleBankSelect = (bank) => {
+    setBankInfo({
+      bankName: bank.name,
+      bankLogo: bank.logo,
+    });
+    setIsDropdownOpen(false);
+  };
+
+  // Handle payment confirmation
   const handleConfirmPayment = () => {
-    if (cart.length === 0) {
-      alert("Giỏ hàng của bạn đang trống!");
-      return;
-    }
+    // Xóa giỏ hàng và cập nhật lại trạng thái
+    localStorage.removeItem("cart"); // Xóa giỏ hàng trong localStorage
+    setCart([]); // Xóa giỏ hàng trong state
 
-    if (!shippingInfo.name || !shippingInfo.phone || !shippingInfo.address) {
-      alert("Vui lòng nhập đầy đủ thông tin nhận hàng!");
-      return;
-    }
-
-    // Tạo đơn hàng với tổng tiền đã tính toán
-    const order = {
-      id: new Date().getTime(),
-      items: cart,
-      total: total,
-      paymentMethod,
-      setTotal: setTotal,
-      date: new Date().toLocaleString(),
-      shippingInfo,
-    };
-
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    localStorage.setItem("orders", JSON.stringify([...orders, order]));
-    localStorage.removeItem("cart");
-    setCart([]);
-    alert("Đặt hàng thành công!");
+    setNotificationModalContent({
+      title: "Thông Báo",
+      message: "Đặt hàng thành công!",
+    });
+    setShowNotificationModal(true);
+    handleCloseModal();
   };
-  // Tạo hóa đơn PDF
-  const generatePDF = () => {
-    const doc = new jsPDF();
-   
- 
-    doc.setFontSize(18);
-    doc.text("HÓA ĐƠN THANH TOÁN", 14, 20);
-    doc.setFontSize(12);
-    doc.text(`Ngày: ${new Date().toLocaleDateString()}`, 14, 30);
-    doc.text(`Phương thức thanh toán: ${paymentMethod}`, 14, 40);
-    // Hiển thị thông tin nhận hàng
-    doc.text(`Tên: ${shippingInfo.name}`, 14, 50);
-    doc.text(`SĐT: ${shippingInfo.phone}`, 14, 60);
-    doc.text(`Địa chỉ: ${shippingInfo.address}`, 14, 70);
-    if (shippingInfo.note) {
-      doc.text(`Ghi chú: ${shippingInfo.note}`, 14, 80);
-    }
 
-
-
-
-      const tableColumn = ["Sản phẩm", "Số lượng", "Đơn giá", "Thành tiền"];
-    const tableRows = cart.map((item) => [
-        item.name,
-        item.quantity,
-        Number(item.price).toLocaleString() + "đ",
-        (Number(item.price) * item.quantity).toLocaleString() + "đ",
-    ]);
-
-    doc.autoTable({
-      startY: 90,
-      head: [tableColumn],
-      body: tableRows,
-      theme: "striped",
-      headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: "bold" },
-      styles: { font: "Roboto", fontSize: 12 },
-  });
-    
-     // Tổng tiền
-     const total = cart.reduce((acc, item) => acc + Number(item.price) * item.quantity, 0);
-     doc.text(`Tổng cộng: ${total.toLocaleString()}đ`, 14, doc.lastAutoTable.finalY + 10);
-     doc.save("hoa-don-thanh-toan.pdf");
-
-  };
   return (
-    <div className="container py-5">
-      <h2>Thanh toán</h2>
-      {/* Form nhập thông tin nhận hàng */}
-      <div className="mb-4">
-        <h3>Thông tin nhận hàng</h3>
-        <div className="mb-3">
-          <label>Họ và tên</label>
-          <input
-            type="text"
-            className="form-control"
-            name="name"
-            value={shippingInfo.name}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label>Số điện thoại</label>
-          <input
-            type="text"
-            className="form-control"
-            name="phone"
-            value={shippingInfo.phone}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label>Địa chỉ</label>
-          <input
-            type="text"
-            className="form-control"
-            name="address"
-            value={shippingInfo.address}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label>Ghi chú</label>
-          <textarea
-            className="form-control"
-            name="note"
-            value={shippingInfo.note}
-            onChange={handleChange}
-          ></textarea>
-        </div>
-      </div>
+    <>
+      <Button variant="primary" onClick={handleShowModal} className="m-5">
+        Thanh Toán Ngay
+      </Button>
 
-      {/* Chọn phương thức thanh toán */}
-      <div className="mb-4">
-        <h3>Phương thức thanh toán</h3>
-        <select
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          className="form-control"
-        >
-          <option>Thanh toán khi nhận hàng</option>
-          <option>Chuyển khoản ngân hàng</option>
-        </select>
-      </div>
+      {/* Payment Modal */}
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        size="lg"
+        backdrop="static"
+        keyboard={false}
+        scrollable={true}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Thông Tin Thanh Toán và Đặt Hàng</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {/* Shipping Information Form */}
+          <div className="mb-4">
+            <h5>Thông tin nhận hàng</h5>
+            <div className="mb-3">
+              <label className="form-label">
+                Họ và tên <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name="name"
+                value={shippingInfo.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+                Số điện thoại <span className="text-danger">*</span>
+              </label>
+              <input
+                type="tel"
+                className="form-control"
+                name="phone"
+                value={shippingInfo.phone}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+                Địa chỉ <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name="address"
+                value={shippingInfo.address}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Ghi chú</label>
+              <textarea
+                className="form-control"
+                name="note"
+                rows={2}
+                value={shippingInfo.note}
+                onChange={handleChange}
+              ></textarea>
+            </div>
+          </div>
 
-      <>
-        <ul className="list-unstyled">
-          {cart.map((item) => (
-            <li key={item.id} className="d-flex align-items-center mb-3">
-              <Link
-                to={`/product/${item.id}`}
-                className="text-decoration-none d-flex align-items-center"
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  width="50"
-                  height="50"
-                  className="me-2"
-                />
-                <span>
-                  {item.name} - {Number(item.price).toLocaleString()}đ x{" "}
-                  {item.quantity}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <h4>
-          Tổng cộng:{" "}
-          {cart
-            .reduce((acc, item) => acc + Number(item.price) * item.quantity, 0)
-            .toLocaleString()}
-          đ
-        </h4>
-        <button onClick={handleConfirmPayment} className="btn btn-success me-2">
-          Xác nhận thanh toán
-        </button>
-        <button onClick={generatePDF} className="btn btn-primary">
-          Tải hóa đơn PDF
-        </button>
-      </>
-    </div>
+          {/* Payment Method */}
+          <div className="mb-4">
+            <h5>Phương thức thanh toán</h5>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="form-select"
+            >
+              <option value="Thanh toán khi nhận hàng">
+                Thanh toán khi nhận hàng (COD)
+              </option>
+              <option value="Chuyển khoản ngân hàng">
+                Chuyển khoản ngân hàng
+              </option>
+            </select>
+          </div>
+
+          {/* Bank Information if selected */}
+          {paymentMethod === "Chuyển khoản ngân hàng" && (
+            <div className="mb-4">
+              <h6>Thông tin chuyển khoản</h6>
+              <div className="position-relative mb-3">
+                <label className="form-label d-block mb-2 fw-medium">
+                  Ngân hàng <span className="text-danger">*</span>
+                </label>
+                <button
+                  type="button"
+                  className="form-select text-start w-100 d-flex align-items-center justify-content-between"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  aria-expanded={isDropdownOpen}
+                >
+                  {bankInfo.bankName ? (
+                    <div className="d-flex align-items-center">
+                      <img
+                        src={bankInfo.bankLogo}
+                        alt={bankInfo.bankName}
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          objectFit: "contain",
+                          marginRight: "8px",
+                        }}
+                      />
+                      <span>{bankInfo.bankName}</span>
+                    </div>
+                  ) : (
+                    <span>-- Chọn ngân hàng --</span>
+                  )}
+                  <span
+                    className={`ms-2 transition-transform ${
+                      isDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  >
+                    &#9660;
+                  </span>
+                </button>
+                {isDropdownOpen && (
+                  <ul
+                    className="list-unstyled position-absolute bg-white border rounded mt-1 w-100 overflow-y-auto shadow-sm py-1"
+                    style={{ maxHeight: "200px", zIndex: 1050 }}
+                  >
+                    {popularBanks.map((bank) => (
+                      <li key={bank.name}>
+                        <button
+                          type="button"
+                          className="dropdown-item d-flex align-items-center w-100"
+                          onClick={() => handleBankSelect(bank)}
+                        >
+                          <img
+                            src={bank.logo}
+                            alt={bank.name}
+                            style={{
+                              width: "24px",
+                              height: "24px",
+                              objectFit: "contain",
+                              marginRight: "10px",
+                            }}
+                          />
+                          {bank.name}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Total Price */}
+          <div className="mt-4 border-top pt-3">
+            <h5>Tổng cộng</h5>
+            <p className="fs-5 fw-bold text-danger">
+              {formattedTotal} đ {/* Hiển thị tổng tiền theo đơn vị VND */}
+            </p>
+          </div>
+
+          {/* Buttons to Close Modal and Confirm Payment */}
+          <div className="d-flex justify-content-end mt-4 pt-3 border-top">
+            <Button
+              variant="secondary"
+              className="me-2"
+              onClick={handleCloseModal}
+              type="button"
+            >
+              Đóng
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleConfirmPayment}
+              type="button"
+            >
+              Xác nhận Đặt Hàng
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Notification Modal */}
+      <Modal
+        show={showNotificationModal}
+        onHide={handleCloseNotificationModal}
+        size="lg"
+        centered
+        aria-labelledby="notification-modal-title"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="notification-modal-title">
+            {notificationModalContent.title}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {notificationModalContent.message}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseNotificationModal}>
+            Đóng
+          </Button>
+          <Button variant="primary" onClick={handleCloseNotificationModal}>
+            OK
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 }
+
+export default PaymentFeature;

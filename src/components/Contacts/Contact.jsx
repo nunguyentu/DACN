@@ -75,13 +75,13 @@ export default function Contact() {
             />
           </div>
           <button type="submit" className="btn btn-primary w-100">
-            Gửi tin nhắn
+            Gửi liên hệ
+
           </button>
         </form>
       </div>
   
 </div>
-
       {/* Thông báo thành công */}
       {showMessage && <div className="success-message animate">Tin nhắn đã gửi thành công!</div>}
 

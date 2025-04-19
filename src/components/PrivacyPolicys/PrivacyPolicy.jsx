@@ -31,7 +31,7 @@ const PrivacyPolicy = () => {
       </section>
 
       <p className="contact-info">
-        Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ chúng tôi qua email: <a href="mailto:support@silverluxe.com">support@silverluxe.com</a>
+        Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ chúng tôi qua email: <a href="mailto:support@Fruitables.com">support@Fruitables.com</a>
       </p>
     </div>
   );

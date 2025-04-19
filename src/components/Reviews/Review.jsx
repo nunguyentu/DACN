@@ -5,6 +5,9 @@ const Review = () => {
   const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Load dữ liệu từ localStorage khi trang load
   useEffect(() => {
@@ -26,10 +29,25 @@ const Review = () => {
         comment,
         date: new Date().toLocaleDateString(),
       };
-      setReviews([newReview, ...reviews]); // Thêm vào đầu danh sách
+      setReviews([newReview, ...reviews]);
       setName("");
       setRating(5);
       setComment("");
+      setSuccessMessage("Cảm ơn bạn đã đánh giá!"); // Hiển thị thông báo thành công
+      setErrorMessage(""); // Xóa thông báo lỗi
+
+      setTimeout(() => {
+        setSuccessMessage(""); // Xóa thông báo thành công sau 5 giây
+      }, 5000);
+    } else {
+      setErrorMessage("Vui lòng điền đầy đủ tên và đánh giá!"); // Thông báo lỗi
+      setSuccessMessage(""); // Xóa thông báo thành công
+      setIsAnimating(true);
+
+      setTimeout(() => {
+        setIsAnimating(false);
+        setErrorMessage(""); // Xóa thông báo lỗi sau 5 giây
+      }, 5000);
     }
   };
 
@@ -44,17 +62,11 @@ const Review = () => {
       </header>
 
       <div className="dg">
-        <h1 className="text-2xl font-bold text-center mb-6">
-          Đánh Giá Sản Phẩm
-        </h1>
-
+        <h1 className="text-2xl font-bold text-center mb-6">Đánh Giá Sản Phẩm</h1>
 
         <div className="khungdanhgia">
           {/* Form nhập đánh giá */}
-          <form
-            onSubmit={handleSubmit}
-            className="sub"
-          >
+          <form onSubmit={handleSubmit} className="sub">
             <input
               type="text"
               placeholder="Tên của bạn"
@@ -84,13 +96,32 @@ const Review = () => {
               required
             />
 
-            <button
-              type="submit"
-              className="input"
-            >
+            <button type="submit" className="input">
               Gửi đánh giá
             </button>
           </form>
+
+           {/* Hiển thị thông báo thành công */}
+{successMessage && (
+  <div
+    className={`${
+      isAnimating ? "animate-pulse" : ""
+    } text-green-600 bg-green-100 notification`}
+  >
+    {successMessage}
+  </div>
+)}
+
+{/* Hiển thị thông báo lỗi */}
+{errorMessage && (
+  <div
+    className={`${
+      isAnimating ? "animate-pulse" : ""
+    } text-green-600 bg-green-100 notification`}
+  >
+    {errorMessage}
+  </div>
+)}
 
           {/* Hiển thị đánh giá */}
           <div className="mt-6">
